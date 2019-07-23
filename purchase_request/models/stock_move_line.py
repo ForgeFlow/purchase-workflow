@@ -76,7 +76,8 @@ class StockMoveLine(models.Model):
                     allocation.allocated_product_qty += allocated_qty
                     to_allocate_qty -= allocated_qty
                 request = allocation.purchase_request_line_id.request_id
-                if allocated_qty:
+                if allocated_qty and not \
+                        self.env.context.get('no_notify', False):
                     message_data = self._prepare_message_data(ml, request,
                                                               allocated_qty)
                     message = \
@@ -90,7 +91,6 @@ class StockMoveLine(models.Model):
                             message_data)
                     ml.move_id.picking_id.message_post(
                         body=picking_message, subtype='mail.mt_comment')
-
                 allocation._compute_open_product_qty()
 
     def _action_done(self):

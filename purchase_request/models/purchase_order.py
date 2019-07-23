@@ -148,16 +148,16 @@ class PurchaseOrderLine(models.Model):
                 alloc.prev_allocated_qty = rec.qty_received
                 alloc.write({'prev_allocated_qty': rec.qty_received})
                 alloc.write({'allocated_product_qty': allocated_product_qty})
-
-                message_data = self._prepare_request_message_data(
-                    alloc,
-                    alloc.purchase_request_line_id,
-                    allocated_product_qty)
-                message = \
-                    self._purchase_request_confirm_done_message_content(
-                        message_data)
-                alloc.purchase_request_line_id.request_id.message_post(
-                    body=message, subtype='mail.mt_comment')
+                if not self.env.context.get('no_notify', False):
+                    message_data = self._prepare_request_message_data(
+                        alloc,
+                        alloc.purchase_request_line_id,
+                        allocated_product_qty)
+                    message = \
+                        self._purchase_request_confirm_done_message_content(
+                            message_data)
+                    alloc.purchase_request_line_id.request_id.message_post(
+                        body=message, subtype='mail.mt_comment')
 
                 alloc.purchase_request_line_id._compute_qty()
         return True
