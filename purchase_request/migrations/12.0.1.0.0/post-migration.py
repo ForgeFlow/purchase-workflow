@@ -71,29 +71,27 @@ def create_allocations(env):
         """
     )
     res = cr.fetchall()
-    move_ids = []
+    a_done = []
     for (purchase_request_line_id, purchase_order_line_id, sm_id, product_qty,
          product_uom_qty, move_product_qty, req_qty) in res:
-
-        move_ids.append(sm_id)
+        purchase_request_line = env['purchase.request.line'].browse(
+            purchase_request_line_id)
+        if purchase_request_line.qty_done >= purchase_request_line.product_qty:
+            continue
         if sm_id:
             # we allocated what is in the stock move
             create_allocation(
                 env, purchase_order_line_id, purchase_request_line_id,
-                sm_id, move_product_qty)
+                sm_id, req_qty)
+            #  cannot call super, open_qty is zero
+            sm = env['stock.move'].browse(sm_id)
+            if sm.state == 'done':
+                a_done = allocate_stockable(sm.move_line_ids, a_done)
         else:
             # we allocated what is in the PR line
             create_allocation(
                 env, purchase_order_line_id, purchase_request_line_id,
                 False, req_qty)
-    #  cannot call super, open_qty is zero
-    a_done = []
-    for move_id in move_ids:
-        sm = env['stock.move'].browse(move_id)
-        if sm.state == 'done':
-            a_done = allocate_stockable(sm.move_line_ids, a_done)
-    env['purchase.request.allocation']._compute_open_product_qty()
-    env['purchase.request.line']._compute_qty()
 
 
 def create_service_allocations(env):
