@@ -26,17 +26,18 @@ def create_service_allocation(env, po_line, pr_line, qty):
     return alloc
 
 
-def allocate_stockable(ml, a_done=None):
+def allocate_stockable(ml, ml_done=None):
     #  done here because open_product_qty is zero so cannot call method in
     #  stock_move_line
-    if a_done is None:
-        a_done = []
+    if ml_done is None:
+        ml_done = []
     ml.product_uom_id._compute_quantity(
         ml.qty_done, ml.product_id.uom_id)
     to_allocate_qty = ml.qty_done
     for allocation in \
-            ml.move_id.purchase_request_allocation_ids.filtered(
-                lambda a: a.id not in a_done).sudo():
+            ml.filtered(
+                lambda m: m.id not in ml_done).move_id.\
+                purchase_request_allocation_ids:
         if to_allocate_qty > 0.0 and \
                 allocation.allocated_product_qty < \
                 allocation.requested_product_uom_qty:
@@ -44,8 +45,8 @@ def allocate_stockable(ml, a_done=None):
                 allocation.requested_product_uom_qty, to_allocate_qty)
             allocation.allocated_product_qty += allocated_qty
             to_allocate_qty -= allocated_qty
-        a_done.append(allocation.id)
-    return a_done
+        ml_done.append(ml.id)
+    return ml_done
 
 
 def create_allocations(env):
@@ -71,27 +72,30 @@ def create_allocations(env):
         """
     )
     res = cr.fetchall()
-    a_done = []
+    ml_done = []
     for (purchase_request_line_id, purchase_order_line_id, sm_id, product_qty,
          product_uom_qty, move_product_qty, req_qty) in res:
         purchase_request_line = env['purchase.request.line'].browse(
             purchase_request_line_id)
-        if purchase_request_line.qty_done >= purchase_request_line.product_qty:
+        pending_qty = purchase_request_line.product_qty - \
+            purchase_request_line.qty_done
+        if not pending_qty:
             continue
         if sm_id:
             # we allocated what is in the stock move
             create_allocation(
                 env, purchase_order_line_id, purchase_request_line_id,
-                sm_id, req_qty)
+                sm_id, pending_qty)
             #  cannot call super, open_qty is zero
             sm = env['stock.move'].browse(sm_id)
             if sm.state == 'done':
-                a_done = allocate_stockable(sm.move_line_ids, a_done)
+                ml_done = allocate_stockable(sm.move_line_ids, ml_done)
         else:
             # we allocated what is in the PR line
             create_allocation(
                 env, purchase_order_line_id, purchase_request_line_id,
                 False, req_qty)
+        purchase_request_line._compute_qty()
 
 
 def create_service_allocations(env):

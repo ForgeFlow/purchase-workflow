@@ -8,12 +8,12 @@ logger = logging.getLogger(__name__)
 def store_field_qty_in_progress(cr):
     cr.execute("""SELECT column_name
     FROM information_schema.columns
-    WHERE table_name='purchase_request' AND
+    WHERE table_name='purchase_request_line' AND
     column_name='qty_in_progress'""")
     if not cr.fetchone():
         cr.execute(
             """
-            ALTER TABLE purchase_request ADD COLUMN qty_in_progress float;
+            ALTER TABLE purchase_request_line ADD COLUMN qty_in_progress float;
             """)
 
     logger.info('Computing field qty_in_progress on purchase.request.line')
@@ -30,12 +30,12 @@ def store_field_qty_in_progress(cr):
 def store_field_qty_done(cr):
     cr.execute("""SELECT column_name
     FROM information_schema.columns
-    WHERE table_name='purchase_request' AND
+    WHERE table_name='purchase_request_line' AND
     column_name='qty_done'""")
     if not cr.fetchone():
         cr.execute(
             """
-            ALTER TABLE purchase_request ADD COLUMN qty_done float;
+            ALTER TABLE purchase_request_line ADD COLUMN qty_done float;
             """)
 
     logger.info('Computing field qty_done on purchase.request.line')
@@ -62,12 +62,12 @@ def store_field_qty_done(cr):
 def store_field_qty_cancelled(cr):
     cr.execute("""SELECT column_name
     FROM information_schema.columns
-    WHERE table_name='purchase_request' AND
+    WHERE table_name='purchase_request_line' AND
     column_name='qty_cancelled'""")
     if not cr.fetchone():
         cr.execute(
             """
-            ALTER TABLE purchase_request ADD COLUMN qty_cancelled float;
+            ALTER TABLE purchase_request_line ADD COLUMN qty_cancelled float;
             """)
 
     logger.info('Computing field qty_cancelled on purchase.request.line')
