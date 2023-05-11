@@ -180,10 +180,13 @@ class PurchaseRequestLine(models.Model):
                 # cancelled the purchase order
                 qty_cancelled -= request.qty_done
             if request.product_uom_id:
-                request.qty_cancelled = max(
-                    0, request.product_id.uom_id._compute_quantity(
-                        qty_cancelled, request.product_uom_id
-                    )) if request.purchase_request_allocation_ids else 0
+                try:
+                    request.qty_cancelled = max(
+                        0, request.product_id.uom_id._compute_quantity(
+                            qty_cancelled, request.product_uom_id
+                        )) if request.purchase_request_allocation_ids else 0
+                except UserError:
+                    request.qty_cancelled = qty_cancelled
             else:
                 request.qty_cancelled = qty_cancelled
 
@@ -195,8 +198,11 @@ class PurchaseRequestLine(models.Model):
                 request.purchase_request_allocation_ids.mapped(
                     'allocated_product_qty'))
             if request.product_uom_id:
-                qty_done = request.product_id.uom_id._compute_quantity(
-                    allocated_qty, request.product_uom_id)
+                try:
+                    qty_done = request.product_id.uom_id._compute_quantity(
+                        allocated_qty, request.product_uom_id)
+                except UserError:
+                    qty_done = allocated_qty
             else:
                 qty_done = allocated_qty
             if float_compare(qty_done, request.product_qty,
