@@ -88,6 +88,9 @@ def allocate_stockable(env):
             #  cannot call super, open_qty is zero
             sm = env['stock.move'].browse(sm_id)
             if sm.state == 'done':
+                if sm.product_uom.category_id != sm.product_product_id.uom_id.category_id:
+                    env.cr.execute("UPDATE stock_move set uom_id = %s WHERE id = %s" % (sm.product_product_id.uom_id.id, sm.id))
+                    env.cr.execute("UPDATE stock_move_line set product_uom_id = %s WHERE move_id = %s" % (sm.product_product_id.uom_id.id, sm.id))
                 ml_done = allocate_from_stock_move(env, sm.move_line_ids,
                                                    alloc_uom, ml_done)
         else:
