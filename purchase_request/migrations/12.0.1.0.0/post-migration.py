@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl-3.0).
 
 from openupgradelib import openupgrade
+from odoo.exceptions import UserError
 import logging
 logger = logging.getLogger(__name__)
 
@@ -88,8 +89,12 @@ def allocate_stockable(env):
             #  cannot call super, open_qty is zero
             sm = env['stock.move'].browse(sm_id)
             if sm.state == 'done':
-                ml_done = allocate_from_stock_move(env, sm.move_line_ids,
+                try:
+                    ml_done = allocate_from_stock_move(env, sm.move_line_ids,
                                                    alloc_uom, ml_done)
+                except UserError:
+                    logger.info('Allocation failed for stock move %s' % sm.id)
+                    continue
         else:
             # we allocated what is in the PR line
             req_qty = sm_uom._compute_quantity(req_qty, alloc_uom)
