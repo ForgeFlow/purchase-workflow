@@ -19,7 +19,7 @@ class TestPurchaseReceptionStatus(TransactionCase):
         cls.product_1 = cls.env["product.product"].create(
             {
                 "name": "Test Product 1",
-                "type": "product",
+                "type": "consu",
                 "purchase_method": "receive",
                 "list_price": 100.0,
             }
