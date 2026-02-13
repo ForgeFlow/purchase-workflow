@@ -19,7 +19,7 @@
                 <filter
                     name="tier_validated"
                     string="Validated"
-                    domain="[('validation_status', '=', 'validated')]"
+                    domain="[('validated', '=', True)]"
                     help="Purchase Agreements validated and ready to be confirmed"
                 />
             </filter>

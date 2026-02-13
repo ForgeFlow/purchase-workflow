@@ -23,9 +23,6 @@ class PurchaseOrderCancel(models.TransientModel):
         if purchase_ids is None or active_model != "purchase.order":
             return act_close
         purchase = self.env["purchase.order"].browse(purchase_ids)
-
-        # NB: cancel **before** updating "cancel related" fields so as not to
-        # break behavior of other modules (e.g. base_tier_validation > TierValidation.write())
-        purchase.button_cancel()
         purchase.cancel_reason_id = self.reason_id.id
+        purchase.button_cancel()
         return act_close

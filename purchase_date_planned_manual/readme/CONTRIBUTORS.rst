@@ -1,3 +1,3 @@
-* Lois Rilo <lois.rilo@forgeflow.com>
+* Lois Rilo <lois.rilo@eficent.com>
 * Chau Le <chaulb@trobz.com>
 

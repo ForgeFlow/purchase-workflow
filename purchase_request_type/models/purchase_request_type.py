@@ -8,7 +8,6 @@ class PurchaseRequestType(models.Model):
     _name = "purchase.request.type"
     _description = "Type of purchase request"
     _order = "sequence"
-    _check_company_auto = True
 
     @api.model
     def _get_domain_sequence_id(self):
@@ -35,8 +34,7 @@ class PurchaseRequestType(models.Model):
         required=True,
     )
     picking_type_id = fields.Many2one(
-        comodel_name="stock.picking.type",
-        check_company=True,
+        comodel_name="stock.picking.type", string="Picking Type"
     )
     sequence = fields.Integer(default=10)
     company_id = fields.Many2one(

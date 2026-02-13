@@ -50,7 +50,6 @@ class PurchaseOrder(models.Model):
                                 {
                                     "picking_id": pickings_by_date[date_key],
                                     "date_deadline": date_key,
-                                    "date": date_key,
                                 }
                             )
                             move._action_assign()

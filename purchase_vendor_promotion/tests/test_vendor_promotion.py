@@ -1,7 +1,5 @@
 # Copyright 2024 Camptocamp (<https://www.camptocamp.com>).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-from datetime import date
-
 from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
@@ -12,8 +10,6 @@ class TestVendorPromotion(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.current_year = date.today().year
-        cls.next_year = date.today().year + 1
         cls.company_a = cls.env["res.company"].create({"name": "Company A"})
         cls.warehouse_a = cls.env["stock.warehouse"].search(
             [("company_id", "=", cls.company_a.id)], limit=1
@@ -44,8 +40,8 @@ class TestVendorPromotion(TransactionCase):
                     "product_tmpl_id": cls.product.product_tmpl_id.id,
                     "min_qty": 1,
                     "price": 100,
-                    "date_start": date(cls.next_year, 1, 1),
-                    "date_end": date(cls.next_year, 12, 31),
+                    "date_start": "2025-01-01",
+                    "date_end": "2025-12-31",
                 },
                 {
                     "partner_id": cls.vendor2.id,
@@ -54,8 +50,8 @@ class TestVendorPromotion(TransactionCase):
                     "min_qty": 1,
                     "price": 120,
                     "is_promotion": True,
-                    "date_start": date(cls.current_year, 1, 1),
-                    "date_end": date(cls.current_year, 12, 31),
+                    "date_start": "2024-01-01",
+                    "date_end": "2024-12-31",
                 },
             ]
         )
@@ -69,7 +65,7 @@ class TestVendorPromotion(TransactionCase):
                     "min_qty": 1,
                     "price": 100,
                     "is_promotion": True,
-                    "date_start": date(self.next_year, 1, 1),
+                    "date_start": "2025-01-01",
                 }
             )
 
@@ -78,7 +74,7 @@ class TestVendorPromotion(TransactionCase):
         purchase_order = self.env["purchase.order"].create(
             {
                 "partner_id": self.vendor2.id,
-                "date_planned": date(self.current_year, 6, 1),
+                "date_planned": "2024-06-01",
                 "company_id": self.company_a.id,
                 "order_line": [
                     Command.create(
@@ -106,9 +102,4 @@ class TestVendorPromotion(TransactionCase):
                 }
             )
         )
-        self.assertEqual(
-            orderpoint.promotion_period,
-            f"{date(self.current_year, 1, 1).strftime('%Y-%m-%d')}"
-            " - "
-            f"{date(self.current_year, 12, 31).strftime('%Y-%m-%d')}",
-        )
+        self.assertEqual(orderpoint.promotion_period, "2024-01-01 - 2024-12-31")

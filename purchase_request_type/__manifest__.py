@@ -3,7 +3,7 @@
 
 {
     "name": "Purchase Request Type",
-    "version": "16.0.1.2.1",
+    "version": "16.0.1.0.0",
     "author": "ProThai, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "Purchase Management",
@@ -14,9 +14,7 @@
         "security/security.xml",
         "views/purchase_request_type_view.xml",
         "views/purchase_request_view.xml",
-    ],
-    "demo": [
-        "demo/purchase_request_type.xml",
+        "data/purchase_request_type.xml",
     ],
     "maintainer": ["prapassornS"],
     "installable": True,

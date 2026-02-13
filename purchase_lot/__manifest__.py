@@ -3,13 +3,16 @@
 
 {
     "name": "Purchase Lot",
-    "version": "16.0.2.0.0",
+    "version": "16.0.1.0.0",
     "category": "Purchase",
     "license": "AGPL-3",
     "author": "Akretion, Odoo Community Association (OCA)",
     "maintainers": ["florian-dacosta"],
     "website": "https://github.com/OCA/purchase-workflow",
-    "depends": ["purchase_stock", "stock_restrict_lot"],
+    "depends": [
+        "purchase",
+        "sale_order_lot_selection",
+    ],
     "data": [
         "views/purchase_order_view.xml",
     ],

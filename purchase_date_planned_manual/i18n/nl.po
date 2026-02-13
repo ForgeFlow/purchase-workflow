@@ -39,8 +39,7 @@ msgid "Stock Rule"
 msgstr ""
 
 #. module: purchase_date_planned_manual
-#. odoo-python
-#: code:addons/purchase_date_planned_manual/models/purchase_order.py:0
+#: code:addons/purchase_date_planned_manual/models/purchase_order.py:50
 #, python-format
 msgid ""
 "This line is scheduled for: %s. \n"

@@ -274,7 +274,7 @@ class TestPurchaseProductPackagingContainerDeposit(Common):
             lambda ol: ol.product_id == self.box
         )
 
-        (pallet_line | box_line).invalidate_model()
+        (pallet_line | box_line).invalidate_cache()
         self.assertEqual(pallet_line.qty_received, 0)
         self.assertEqual(box_line.qty_received, 5)
 

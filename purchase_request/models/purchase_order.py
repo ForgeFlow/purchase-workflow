@@ -60,10 +60,7 @@ class PurchaseOrder(models.Model):
                     request, requests_dict[request_id]
                 )
                 request.message_post(
-                    body=message,
-                    subtype_id=self.env.ref(
-                        "purchase_request.mt_request_po_confirmed"
-                    ).id,
+                    body=message, subtype_id=self.env.ref("mail.mt_comment").id
                 )
         return True
 
@@ -184,7 +181,7 @@ class PurchaseOrderLine(models.Model):
                 )
                 if message:
                     alloc.purchase_request_line_id.request_id.message_post(
-                        body=message, subtype_id=self.env.ref("mail.mt_note").id
+                        body=message, subtype_id=self.env.ref("mail.mt_comment").id
                     )
 
                 alloc.purchase_request_line_id._compute_qty()
